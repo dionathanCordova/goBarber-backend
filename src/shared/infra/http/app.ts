@@ -12,7 +12,7 @@ import '@shared/container';
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use('/files', express.static(uploadConfig.directory));
+app.use('/files', express.static(uploadConfig.uploadsFolder));
 app.use(routes);
 
 app.use(
@@ -23,8 +23,6 @@ app.use(
                 message: erro.message,
             });
         }
-
-        console.error(erro);
 
         return response.status(500).json({
             status: 'error',
