@@ -1,7 +1,10 @@
 import { Request, Response } from 'express';
-import { container } from 'tsyringe';
-
+import MailProvider from '@shared/container/providers/MailProvider/implementations/EtherealMailProvider';
 import SendForgotPasswordEmailService from '@modules/users/services/SendForgotPasswordEmailService';
+import UserRepository from '@modules/users/infra/typeorm/repositories/UsersRepository';
+import UsersTokenRepository from '@modules/users/infra/typeorm/repositories/UserTokensRepository';
+
+import HandlebarsMailTemplateProvider from '@shared/container/providers/MailTemplateProvider/implementations/HandleBarsMailTemplateProvider';
 
 export default class ForgotPasswordController {
     public async create(
@@ -10,10 +13,19 @@ export default class ForgotPasswordController {
     ): Promise<Response> {
         const { email } = request.body;
 
-        const sendForgotPasswordEmail = container.resolve(
-            SendForgotPasswordEmailService,
-        );
+        const mailTemplateProvider = new HandlebarsMailTemplateProvider();
+        const userRepository = new UserRepository();
+        const mailProvider = new MailProvider(mailTemplateProvider);
+        const usersTokenRepository = new UsersTokenRepository();
 
+        const sendForgotPasswordEmail = new SendForgotPasswordEmailService(
+            userRepository,
+            mailProvider,
+            usersTokenRepository,
+        );
+        // const sendForgotPasswordEmail = container.resolve(
+        //     SendForgotPasswordEmailService,
+        // );
         await sendForgotPasswordEmail.execute({
             email,
         });

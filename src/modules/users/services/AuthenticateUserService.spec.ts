@@ -3,15 +3,18 @@ import AppError from '@shared/errors/AppError';
 import AuthenticateUserService from './AuthenticateUserService';
 import CreateUserService from './CreateUserService';
 
+let fakeUsersRepository: FakeUsersRepository;
+let authenticateUser: AuthenticateUserService;
+let createUser: CreateUserService;
+
 describe('AuthenticateUser', () => {
+    beforeEach(() => {
+        fakeUsersRepository = new FakeUsersRepository();
+        createUser = new CreateUserService(fakeUsersRepository);
+        authenticateUser = new AuthenticateUserService(fakeUsersRepository);
+    });
+
     it('should be able to authenticate', async () => {
-        const fakeUsersRepository = new FakeUsersRepository();
-
-        const createUser = new CreateUserService(fakeUsersRepository);
-        const authenticateUser = new AuthenticateUserService(
-            fakeUsersRepository,
-        );
-
         await createUser.execute({
             name: 'John Doe',
             email: 'johndoe@teste.com',
@@ -27,11 +30,6 @@ describe('AuthenticateUser', () => {
     });
 
     it('should not be able to authenticate with non existing user', async () => {
-        const fakeUsersRepository = new FakeUsersRepository();
-        const authenticateUser = new AuthenticateUserService(
-            fakeUsersRepository,
-        );
-
         expect(
             authenticateUser.execute({
                 email: 'johndoe@teste.com',
@@ -41,20 +39,13 @@ describe('AuthenticateUser', () => {
     });
 
     it('should not be able to authenticate with wrong password', async () => {
-        const fakeUsersRepository = new FakeUsersRepository();
-
-        const createUser = new CreateUserService(fakeUsersRepository);
-        const authenticateUser = new AuthenticateUserService(
-            fakeUsersRepository,
-        );
-
         await createUser.execute({
             name: 'John Doe',
             email: 'johndoe@teste.com',
             password: '123456',
         });
 
-        expect(
+        await expect(
             authenticateUser.execute({
                 email: 'johndoe@teste.com',
                 password: 'wrong-password',

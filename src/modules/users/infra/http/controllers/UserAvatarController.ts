@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 
 import UserRopository from '@modules/users/infra/typeorm/repositories/UsersRepository';
 import UpdateUserAvatarService from '@modules/users/services/UpdateUserAvatarService';
+import StorageProvider from '@shared/container/providers/StorageProvider/implementations/DiscStorageProvider';
 
 export default class UserAvatarController {
     public async update(
@@ -9,7 +10,11 @@ export default class UserAvatarController {
         response: Response,
     ): Promise<Response> {
         const userRopository = new UserRopository();
-        const updateUserAvatar = new UpdateUserAvatarService(userRopository);
+        const storageProvider = new StorageProvider();
+        const updateUserAvatar = new UpdateUserAvatarService(
+            userRopository,
+            storageProvider,
+        );
 
         const user = await updateUserAvatar.execute({
             user_id: request.user.id,

@@ -10,8 +10,6 @@ export default class DiskStorageProvider implements IStorageProvider {
             path.resolve(uploadConfig.tmpFolder, file),
             path.resolve(uploadConfig.uploadsFolder, 'uploads', file),
         );
-
-        console.log(file);
         return file;
     }
 

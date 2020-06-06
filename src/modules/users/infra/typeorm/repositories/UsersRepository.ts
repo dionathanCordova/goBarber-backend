@@ -22,7 +22,6 @@ class UsersRepository implements IUserRepository {
         const findUser = await this.ormRepository.findOne({
             where: { email },
         });
-
         return findUser;
     }
 
