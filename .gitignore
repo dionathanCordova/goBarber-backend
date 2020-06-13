@@ -1,3 +1,10 @@
-node_modules
 
-coverage
+
+
+coverage/
+node_modules/
+build/
+
+ormconfig.json
+temp/
+.env

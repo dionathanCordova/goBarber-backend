@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import multer from 'multer';
 import uploadConfig from '@config/upload';
-
+import { celebrate, Joi, Segments } from 'celebrate';
 import UpdateUserAvatarService from '@modules/users/services/UpdateUserAvatarService';
 import UserRopository from '@modules/users/infra/typeorm/repositories/UsersRepository';
 import StorageProvider from '@shared/container/providers/StorageProvider/implementations/DiscStorageProvider';
@@ -13,7 +13,17 @@ const usersRouter = Router();
 const upload = multer(uploadConfig);
 const usersController = new UsersController();
 
-usersRouter.post('/', usersController.create);
+usersRouter.post(
+    '/',
+    celebrate({
+        [Segments.BODY]: {
+            name: Joi.string().required(),
+            email: Joi.string().email().required(),
+            password: Joi.string().required(),
+        },
+    }),
+    usersController.create,
+);
 
 usersRouter.patch(
     '/avatar',
